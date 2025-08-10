@@ -1,0 +1,435 @@
+﻿<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Lazer – Games & Turnier</title>
+
+    <style>
+        /* ===== Theme & Base ===== */
+        :root {
+            --bg1: #0f1021;
+            --bg2: #1b1c3a;
+            --txt: #eaf4ff;
+            --muted: #cfe6ff;
+            --btn1: #6d5efc;
+            --btn2: #00e0ff;
+            --border: rgba(255,255,255,.22);
+            --card1: rgba(255,255,255,.10);
+            --card2: rgba(255,255,255,.05);
+            --shadow: 0 10px 30px rgba(0,0,0,.45);
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html, body {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;
+            color: var(--txt);
+            text-align: center;
+            background: radial-gradient(1200px 1200px at -10% -20%, #1e2a78 0%, transparent 40%), radial-gradient(1000px 1000px at 120% 10%, #1fd1f9 0%, transparent 40%), linear-gradient(135deg,var(--bg1),var(--bg2));
+            background-attachment: fixed;
+            animation: bgfloat 16s ease-in-out infinite alternate;
+        }
+
+        @keyframes bgfloat {
+            0% {
+                background-position: 0 0,0 0,0 0
+            }
+
+            100% {
+                background-position: 20px -20px,-30px 40px,0 0
+            }
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 20px auto;
+            padding: 0 14px
+        }
+
+        h1 {
+            margin: 20px 0 6px;
+            font-weight: 800;
+            letter-spacing: .06em;
+            font-size: clamp(28px,4.2vw,48px);
+            text-shadow: 0 2px 20px rgba(0,224,255,.25)
+        }
+
+        h2 {
+            margin: 8px 0 14px;
+            font-weight: 700;
+            letter-spacing: .02em
+        }
+
+        .sub {
+            opacity: .8;
+            margin-bottom: 16px
+        }
+
+        /* ===== Cards & Layout ===== */
+        .card {
+            margin: 14px auto;
+            padding: 16px;
+            border-radius: 16px;
+            background: linear-gradient(180deg,var(--card1),var(--card2));
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center
+        }
+
+        .hr {
+            height: 1px;
+            background: rgba(255,255,255,.22);
+            margin: 14px 0;
+            border-radius: 1px
+        }
+
+        /* ===== Buttons ===== */
+        .button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg,var(--btn1),var(--btn2));
+            color: #fff;
+            border: 0;
+            border-radius: 12px;
+            padding: 12px 18px;
+            margin: 6px;
+            font-weight: 800;
+            letter-spacing: .02em;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(0,224,255,.22), inset 0 0 0 1px rgba(255,255,255,.18);
+            transition: transform .14s, box-shadow .2s, filter .2s;
+        }
+
+            .button:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 10px 28px rgba(0,224,255,.28), inset 0 0 0 1px rgba(255,255,255,.24)
+            }
+
+            .button.ghost {
+                background: transparent;
+                border: 1px solid var(--border)
+            }
+
+        /* ===== Inputs ===== */
+        input[type=number], input[type=text], select {
+            background: rgba(255,255,255,.12);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,.24);
+            border-radius: 10px;
+            padding: 10px 12px;
+            outline: none;
+            min-width: 60px;
+            max-width: 280px;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);
+        }
+
+        input::placeholder {
+            color: rgba(255,255,255,.7)
+        }
+
+        input:focus, select:focus {
+            border-color: #00e0ff;
+            box-shadow: 0 0 0 3px rgba(0,224,255,.22)
+        }
+
+        /* ===== Tables ===== */
+        table {
+            margin: auto;
+            border-collapse: collapse;
+            border-radius: 12px;
+            overflow: hidden;
+            min-width: 320px;
+            background: rgba(255,255,255,.06);
+            box-shadow: var(--shadow)
+        }
+
+        th, td {
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255,255,255,.12)
+        }
+
+        thead th {
+            background: linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.06));
+            text-transform: uppercase;
+            font-size: .85rem;
+            letter-spacing: .06em
+        }
+
+        tbody tr:nth-child(odd) {
+            background: rgba(255,255,255,.04)
+        }
+
+        tbody tr:hover {
+            background: rgba(0,224,255,.08)
+        }
+
+        /* ===== Snake ===== */
+        canvas {
+            display: block;
+            margin: 16px auto;
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,.24);
+            box-shadow: 0 10px 30px rgba(0,0,0,.45), inset 0 0 0 2px rgba(255,255,255,.06);
+            background: radial-gradient(120% 120% at 10% 20%, #0a0c18 15%, #000 70%);
+        }
+
+        /* ===== Tic-Tac-Toe ===== */
+        #tttBoard {
+            display: grid;
+            grid-template-columns: repeat(3,110px);
+            gap: 10px;
+            justify-content: center;
+            margin: 14px auto
+        }
+
+        .ttt-cell {
+            width: 110px;
+            height: 110px;
+            border-radius: 14px;
+            background: rgba(255,255,255,.10);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.4rem;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: inset 0 0 0 2px rgba(255,255,255,.08);
+            transition: transform .12s, background .2s, box-shadow .2s;
+        }
+
+            .ttt-cell:hover {
+                transform: translateY(-2px);
+                background: rgba(0,224,255,.12);
+                box-shadow: inset 0 0 0 2px rgba(0,224,255,.35)
+            }
+
+        /* ===== Social ===== */
+        .social-card {
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 18px;
+            border-radius: 16px;
+            background: linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.04));
+            border: 1px solid var(--border)
+        }
+
+            .social-card img {
+                width: 200px;
+                height: 200px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 3px solid rgba(255,255,255,.8);
+                box-shadow: 0 10px 30px rgba(0,0,0,.4)
+            }
+
+        .link-btn {
+            display: block;
+            width: 100%;
+            max-width: 360px;
+            margin: 8px auto
+        }
+
+        /* ===== Groups / Tournament ===== */
+        .group-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            justify-content: center
+        }
+
+        .group {
+            min-width: 280px;
+            border-radius: 14px;
+            padding: 12px;
+            background: linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.04));
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow)
+        }
+
+        .small {
+            opacity: .85;
+            font-size: .95rem
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Website von</h1>
+        <div class="sub">LAZER</div>
+
+        <!-- Main Menu -->
+        <div id="mainMenu" class="card">
+            <div class="row">
+                <button class="button" onclick="show('spieleMenu')">🎮 Spiele</button>
+                <button class="button" onclick="show('socialPage')">📱 Social Media</button>
+                <button class="button" onclick="show('tournamentPage')">🏆 Turnier-Baum</button>
+                <!-- Neuer Direkt-Link-Button -->
+                <button class="button" onclick="window.open('https://lazer.my.canva.site/spezimafia','_blank')">🥤 Spezibewertungen</button>
+            </div>
+        </div>
+
+        <!-- Social -->
+        <div id="socialPage" class="card" style="display:none">
+            <h2>🌟 Folge mir</h2>
+            <div class="social-card">
+                <img src="https://via.placeholder.com/200" alt="Profilbild">
+                <h3 style="margin:12px 0 6px">Hannes Ziegler</h3>
+                <a class="button link-btn" href="https://instagram.com/hannes.zglr" target="_blank">📷 Instagram: hannes.zglr</a>
+                <a class="button link-btn" style="background:linear-gradient(135deg,#FFE100,#FFD000);color:#000" href="https://www.snapchat.com/add/hannes.zglr" target="_blank">👻 Snapchat: hannes.zglr</a>
+                <div class="hr"></div>
+                <button class="button ghost" onclick="show('mainMenu')">⬅ Zurück</button>
+            </div>
+        </div>
+
+        <!-- Spiele Menu -->
+        <div id="spieleMenu" class="card" style="display:none">
+            <h2>Spiele</h2>
+            <div class="row">
+                <button class="button" onclick="startSnake()">🐍 Snake</button>
+                <button class="button" onclick="startTTT()">⭕❌ Tic-Tac-Toe</button>
+            </div>
+            <button class="button ghost" onclick="show('mainMenu')">⬅ Zurück</button>
+        </div>
+
+        <!-- Snake -->
+        <div id="snakeGame" class="card" style="display:none">
+            <h2>Snake</h2>
+            <canvas id="snake" width="400" height="400"></canvas>
+            <div class="hr"></div>
+            <h3>🏆 Bestenliste</h3>
+            <table><thead><tr><th>Platz</th><th>Name</th><th>Punkte</th></tr></thead><tbody id="scores"></tbody></table>
+            <div class="row" style="margin-top:8px"><button class="button ghost" onclick="show('spieleMenu')">⬅ Zurück</button></div>
+        </div>
+
+        <!-- TTT -->
+        <div id="tttGame" class="card" style="display:none">
+            <h2>Tic-Tac-Toe</h2>
+            <div class="row">
+                <button class="button" onclick="tttNew('pvp')">👥 2 Spieler</button>
+                <button class="button" onclick="tttNew('bot')">🤖 Bot</button>
+                <select id="tttDiff"><option value="easy">Easy</option><option value="medium" selected>Medium</option><option value="hard">Hard</option></select>
+            </div>
+            <div id="tttInfo" class="small" style="margin:8px 0 4px">Wähle Modus</div>
+            <div id="tttBoard"></div>
+            <button class="button ghost" onclick="show('spieleMenu')">⬅ Zurück</button>
+        </div>
+
+        <!-- Tournament -->
+        <div id="tournamentPage" class="card" style="display:none">
+            <h2>🏆 Turnier erstellen</h2>
+            <div class="row">
+                <label>Gruppen: <input type="number" id="numGroups" min="2" max="16" value="4"></label>
+                <label>Teilnehmer: <input type="number" id="numPlayers" min="4" max="64" value="16"></label>
+                <label>Weiter/Gruppe: <input type="number" id="numAdvance" min="1" max="4" value="2"></label>
+                <label>Rückrunde: <input type="checkbox" id="doubleRound"></label>
+            </div>
+            <div class="row" style="margin-top:8px">
+                <button class="button" onclick="setupPlayers()">Weiter</button>
+                <button class="button ghost" onclick="resetTournament()">🔄 Zurücksetzen</button>
+                <button class="button ghost" onclick="show('mainMenu')">⬅ Menü</button>
+            </div>
+            <div id="tContent" style="margin-top:12px"></div>
+        </div>
+    </div>
+
+    <script>
+        /* ===== View switching ===== */
+        function show(id) { ["mainMenu", "spieleMenu", "snakeGame", "tttGame", "socialPage", "tournamentPage"].forEach(x => document.getElementById(x).style.display = "none"); document.getElementById(id).style.display = "block" }
+
+        /* ===== Snake ===== */
+        let sName = "", cv, ct, box = 20, snake, dir, food, pts, loop; const emojis = ["🍎", "🍌", "🍓", "🍒", "🥝", "🍇", "🍊", "🍍"];
+        function startSnake() { sName = prompt("Name?") || "Gast"; show("snakeGame"); cv = document.getElementById("snake"); ct = cv.getContext("2d"); snake = [{ x: 9 * box, y: 10 * box }]; dir = "RIGHT"; food = rndFood(); pts = 0; document.onkeydown = key; clearInterval(loop); loop = setInterval(draw, 100) }
+        function key(e) { if ((e.keyCode == 37 || e.key === 'a') && dir != "RIGHT") dir = "LEFT"; else if ((e.keyCode == 38 || e.key === 'w') && dir != "DOWN") dir = "UP"; else if ((e.keyCode == 39 || e.key === 'd') && dir != "LEFT") dir = "RIGHT"; else if ((e.keyCode == 40 || e.key === 's') && dir != "UP") dir = "DOWN" }
+        function grid() { ct.strokeStyle = "rgba(255,255,255,.08)"; for (let i = 0; i <= 400; i += box) { ct.beginPath(); ct.moveTo(i, 0); ct.lineTo(i, 400); ct.stroke(); ct.beginPath(); ct.moveTo(0, i); ct.lineTo(400, i); ct.stroke() } }
+        function drawSnake() { for (let i = 0; i < snake.length; i++) { ct.fillStyle = i ? "rgba(0,255,140,.9)" : "#49ffb6"; ct.shadowColor = "rgba(0,255,200,.35)"; ct.shadowBlur = 8; ct.fillRect(snake[i].x, snake[i].y, box, box); ct.shadowBlur = 0 } }
+        function rndFood() { return { x: Math.floor(Math.random() * 20) * box, y: Math.floor(Math.random() * 20) * box, emoji: emojis[(Math.random() * emojis.length) | 0] } }
+        function draw() {
+            ct.clearRect(0, 0, 400, 400); grid(); drawSnake(); ct.font = "18px Inter, Arial"; ct.fillText(food.emoji, food.x + 5, food.y + 15);
+            let x = snake[0].x, y = snake[0].y; if (dir == "LEFT") x -= box; if (dir == "UP") y -= box; if (dir == "RIGHT") x += box; if (dir == "DOWN") y += box;
+            if (x == food.x && y == food.y) { pts++; food = rndFood() } else snake.pop();
+            const head = { x, y }; if (x < 0 || y < 0 || x >= 400 || y >= 400 || snake.some(s => s.x == x && s.y == y)) { clearInterval(loop); save(sName, pts); board(); return alert("Game Over! Punkte: " + pts) }
+            snake.unshift(head); ct.fillStyle = "#fff"; ct.fillText("Punkte: " + pts, 60, 20)
+        }
+        function save(n, p) { let a = JSON.parse(localStorage.getItem("snakeScores") || "[]"); a.push({ name: n, points: p }); a.sort((x, y) => y.points - x.points); a = a.slice(0, 5); localStorage.setItem("snakeScores", JSON.stringify(a)) }
+        function board() { let a = JSON.parse(localStorage.getItem("snakeScores") || "[]"), b = document.getElementById("scores"); b.innerHTML = ""; a.forEach((s, i) => b.innerHTML += `<tr><td>${i + 1}</td><td>${s.name}</td><td>${s.points}</td></tr>`) } board();
+
+        /* ===== Tic-Tac-Toe ===== */
+        let tB = [], tTurn = "X", tMode = "pvp";
+        function startTTT() { show("tttGame"); tttNew("pvp") }
+        function tttNew(m) { tMode = m; tB = Array(9).fill(""); tTurn = "X"; drawTTT() }
+        function drawTTT() { const b = document.getElementById("tttBoard"); b.innerHTML = ""; tB.forEach((v, i) => { const d = document.createElement("div"); d.className = "ttt-cell"; d.textContent = v; d.onclick = () => move(i); b.appendChild(d) }); document.getElementById("tttInfo").textContent = `Modus: ${tMode === "bot" ? "Bot (" + document.getElementById("tttDiff").value + ")" : "2 Spieler"} — Am Zug: ${tTurn}` }
+        function move(i) { if (tB[i]) return; tB[i] = tTurn; const w = winner(); if (w) { alert(w === "draw" ? "Unentschieden!" : w + " gewinnt!"); return tttNew(tMode) } tTurn = tTurn === "X" ? "O" : "X"; drawTTT(); if (tMode === "bot" && tTurn === "O") setTimeout(bot, 230) }
+        function bot() {
+            const d = document.getElementById("tttDiff").value, emp = tB.map((v, i) => v ? null : i).filter(v => v !== null); let m = emp[(Math.random() * emp.length) | 0];
+            if (d !== "easy") { for (const i of emp) { let c = tB.slice(); c[i] = "O"; if (winBoard(c, "O")) { m = i; break } } if (d === "hard" && m === undefined) { for (const i of emp) { let c = tB.slice(); c[i] = "X"; if (winBoard(c, "X")) { m = i; break } } } if (m === undefined) m = emp[0] } move(m)
+        }
+        function winner() { const w = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]; for (const [a, b, c] of w) if (tB[a] && tB[a] === tB[b] && tB[b] === tB[c]) return tB[a]; return tB.includes("") ? null : "draw" }
+        function winBoard(b, p) { const w = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]; return w.some(([a, c, d]) => b[a] === p && b[c] === p && b[d] === p) }
+
+        /* ===== Turnier: Gruppen → KO mit echter Setzung (1A–2B, 1B–2A, …) ===== */
+        let G = {}, adv = 2, ret = false;
+        function resetTournament() { document.getElementById("tContent").innerHTML = ""; numGroups.value = 4; numPlayers.value = 16; numAdvance.value = 2; doubleRound.checked = false }
+        function setupPlayers() {
+            const g = +numGroups.value, p = +numPlayers.value; adv = +numAdvance.value; ret = doubleRound.checked;
+            let h = "<h3>Teilnehmer</h3>"; for (let i = 0; i < p; i++)h += `<input id="pl${i}" type="text" placeholder="Teilnehmer ${i + 1}"><br>`;
+            h += `<div class="row"><button class="button" onclick="mkGroups(${g},${p})">Gruppen erstellen</button><button class="button ghost" onclick="resetTournament()">🔄 Zurücksetzen</button></div>`;
+            tContent.innerHTML = h
+        }
+        function mkGroups(g, p) {
+            const names = []; for (let i = 0; i < p; i++) { names.push({ name: (document.getElementById("pl" + i).value || `Spieler ${i + 1}`).trim(), pts: 0, gf: 0, ga: 0 }) }
+            names.sort(() => Math.random() - 0.5); G = {}; for (let i = 0; i < g; i++)G[String.fromCharCode(65 + i)] = []; names.forEach((n, i) => G[String.fromCharCode(65 + (i % g))].push({ ...n })); groupInputs()
+        }
+        function groupInputs() { let h = `<h3>Gruppenphase – Ergebnisse</h3><div class="group-wrap">`; for (const k of Object.keys(G).sort()) { const L = G[k]; h += `<div class="group"><h4>Gruppe ${k}</h4>`; for (let i = 0; i < L.length; i++) { for (let j = i + 1; j < L.length; j++) { h += `${L[i].name} – ${L[j].name}: <input id="${k}_${i}_${j}" type="number"> : <input id="${k}_${j}_${i}" type="number"><br>`; if (ret) h += `${L[j].name} – ${L[i].name}: <input id="${k}_${j}_${i}_r" type="number"> : <input id="${k}_${i}_${j}_r" type="number"><br>` } } h += "</div>" } h += `</div><div class="row"><button class="button" onclick="calcTables()">Tabellen berechnen</button><button class="button ghost" onclick="resetTournament()">🔄 Zurücksetzen</button></div>`; tContent.innerHTML = h }
+        function calcTables() { for (const k in G) G[k].forEach(t => { t.pts = 0; t.gf = 0; t.ga = 0 }); for (const k in G) { const L = G[k]; for (let i = 0; i < L.length; i++) { for (let j = i + 1; j < L.length; j++) { apply(L[i], L[j], n(`${k}_${i}_${j}`), n(`${k}_${j}_${i}`)); if (ret) apply(L[j], L[i], n(`${k}_${j}_${i}_r`), n(`${k}_${i}_${j}_r`)) } } L.sort((a, b) => b.pts - a.pts || ((b.gf - b.ga) - (a.gf - a.ga)) || (b.gf - a.gf) || a.name.localeCompare(b.name)) } tablesAndKO() }
+        const n = id => parseInt(document.getElementById(id)?.value) || 0;
+        function apply(a, b, ga, gb) { a.gf += ga; a.ga += gb; b.gf += gb; b.ga += ga; if (ga > gb) a.pts += 3; else if (gb > ga) b.pts += 3; else { a.pts++; b.pts++ } }
+        function tablesAndKO() {
+            let h = `<h3>Tabellen</h3><div class="group-wrap">`, qBy = {}, order = Object.keys(G).sort();
+            for (const k of order) {
+                h += `<div class="group"><h4>Gruppe ${k}</h4><table><tr><th>Team</th><th>P</th><th>GF</th><th>GA</th><th>Diff</th></tr>`;
+                G[k].forEach(t => h += `<tr><td>${t.name}</td><td>${t.pts}</td><td>${t.gf}</td><td>${t.ga}</td><td>${t.gf - t.ga}</td></tr>`);
+                qBy[k] = G[k].slice(0, adv).map(t => t.name); h += `</table><div class="small" style="margin-top:6px">Weiter: ${qBy[k].join(", ")}</div></div>`
+            }
+            h += "</div>";
+            const seed = seedPairs(order, qBy, adv);
+            if (!seed.ok) { h += `<p><b>Hinweis:</b> Setzung nicht möglich. Typisch: je Gruppe 2 weiter & gerade Anzahl Gruppen (AB,CD,…).</p><button class="button ghost" onclick="resetTournament()">🔄 Zurücksetzen</button>`; return tContent.innerHTML = h }
+            h += renderRound("Runde 1", seed.matches, 0) + `<div class="row"><button class="button" onclick="advance(0)">Runde auswerten</button><button class="button ghost" onclick="resetTournament()">🔄 Zurücksetzen</button></div>`;
+            tContent.innerHTML = h; window.__KO__ = { rounds: [seed.matches] }
+        }
+        function seedPairs(ord, qBy, k) {
+            const g = ord.length, ok = (g % 2 === 0) && (k === 2 || k === 1); if (!ok) return { ok: false }; const m = [];
+            if (k === 2) { for (let i = 0; i < g; i += 2) { const A = ord[i], B = ord[i + 1]; const [a1, a2] = qBy[A], [b1, b2] = qBy[B]; if (!a1 || !a2 || !b1 || !b2) return { ok: false }; m.push([a1, b2], [b1, a2]) } }
+            else { for (let i = 0; i < g; i += 2) { const A = ord[i], B = ord[i + 1]; const a1 = qBy[A][0], b1 = qBy[B][0]; if (!a1 || !b1) return { ok: false }; m.push([a1, b1]) } }
+            return { ok: true, matches: m }
+        }
+        function renderRound(title, m, ri) {
+            let h = `<h3>${m.length == 1 ? "Finale" : m.length == 2 ? "Halbfinale" : m.length == 4 ? "Viertelfinale" : m.length == 8 ? "Achtelfinale" : "K.O.-Runde"} (${title})</h3>`;
+            m.forEach((x, i) => h += `${x[0]} <input id="ko_${ri}_${i}_h" type="number"> : <input id="ko_${ri}_${i}_a" type="number"> ${x[1]}<br>`); return h + '<div class="hr"></div>'
+        }
+        function advance(ri) {
+            const st = window.__KO__, cur = st.rounds[ri], nxt = []; for (let i = 0; i < cur.length; i++) { const [h, a] = cur[i], sh = n(`ko_${ri}_${i}_h`), sa = n(`ko_${ri}_${i}_a`); nxt.push(sh >= sa ? h : a) }
+            const pairs = []; for (let i = 0; i < nxt.length; i += 2)pairs.push([nxt[i], nxt[i + 1]]); st.rounds[ri + 1] = pairs;
+            let html = renderRound("Nächste Runde", pairs, ri + 1);
+            if (pairs.length) { html += `<div class="row"><button class="button" onclick="advance(${ri + 1})">Runde auswerten</button><button class="button ghost" onclick="resetTournament()">🔄 Zurücksetzen</button></div>` }
+            else { html += `<h3>🏆 Sieger: ${nxt[0]}</h3><div class="row"><button class="button" onclick="resetTournament()">Neues Turnier</button></div>` }
+            document.getElementById("tContent").insertAdjacentHTML("beforeend", html)
+        }
+    </script>
+</body>
+</html>
